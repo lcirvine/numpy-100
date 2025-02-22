@@ -3,15 +3,12 @@
 
 # 100 numpy exercises
 
-This is a collection of exercises that have been collected in the numpy mailing list, on stack 
-overflow
+This is a collection of exercises that have been collected in the numpy mailing list, on stack overflow
 and in the numpy documentation. The goal of this collection is to offer a quick reference for both old
-and new 
-users but also to provide a set of exercises for those who teach.
+and new users but also to provide a set of exercises for those who teach.
 
 
-If you find an error or think you've a better way to
- solve some of them, feel
+If you find an error or think you've a better way to solve some of them, feel
 free to open an issue at <https://github.com/rougier/numpy-100>.
 File automatically generated. See the documentation to update questions/answers/hints programmatically.
 
@@ -170,12 +167,6 @@ Z = np.zeros((8,8),dtype=int)
 Z[1::2,::2] = 1
 Z[::2,1::2] = 1
 print(Z)
-
-# Alternative solution: Using reshaping
-arr = np.ones(64,dtype=int)
-arr[::2]=0
-arr = arr.reshape((8,8))
-print(arr)
 ```
 #### 20. Consider a (6,7,8) shape array, what is the index (x,y,z) of the 100th element? (★☆☆)
 
@@ -211,7 +202,7 @@ color = np.dtype([("r", np.ubyte),
 
 
 ```python
-Z = np.dot(np.ones((5,3)), np.ones((3,2)))
+Z = np.matmul(np.ones((5, 3)), np.ones((3, 2)))
 print(Z)
 
 # Alternative solution, in Python 3.5 and above
@@ -903,6 +894,32 @@ P0 = np.random.uniform(-10, 10, (10,2))
 P1 = np.random.uniform(-10,10,(10,2))
 p = np.random.uniform(-10, 10, (10,2))
 print(np.array([distance(P0,P1,p_i) for p_i in p]))
+
+# Author: Yang Wu (Broadcasting)
+def distance_points_to_lines(p: np.ndarray, p_1: np.ndarray, p_2: np.ndarray) -> np.ndarray:
+    x_0, y_0 = p.T  # Shape -> (n points, )
+    x_1, y_1 = p_1.T  # Shape -> (n lines, )
+    x_2, y_2 = p_2.T  # Shape -> (n lines, )
+
+    # Displacement vector coordinates from p_1 -> p_2
+    dx = x_2 - x_1  # Shape -> (n lines, )
+    dy = y_2 - y_1  # Shape -> (n lines, )
+
+    # The 'cross product' term
+    cross_term = x_2 * y_1 - y_2 * x_1  # Shape -> (n lines, )
+
+    # Broadcast x_0, y_0 (n points, 1) and dx, dy, cross_term (1, n lines) -> (n points, n lines)
+    numerator = np.abs(
+        dy[np.newaxis, :] * x_0[:, np.newaxis]
+        - dx[np.newaxis, :] * y_0[:, np.newaxis]
+        + cross_term[np.newaxis, :]
+    )
+    denominator = np.sqrt(dx**2 + dy**2)  # Shape -> (n lines, )
+
+    # Shape (n points, n lines) / (1, n_lines) -> (n points, n lines)
+    return numerator / denominator[np.newaxis, :]
+
+distance_points_to_lines(p, P0, P1)
 ```
 #### 80. Consider an arbitrary array, write a function that extract a subpart with a fixed shape and centered on a given element (pad with a `fill` value when necessary) (★★★)
 
@@ -1013,7 +1030,7 @@ S = symetric(np.random.randint(0,10,(5,5)))
 S[2,3] = 42
 print(S)
 ```
-#### 86. Consider a set of p matrices wich shape (n,n) and a set of p vectors with shape (n,1). How to compute the sum of of the p matrix products at once? (result has shape (n,1)) (★★★)
+#### 86. Consider a set of p matrices with shape (n,n) and a set of p vectors with shape (n,1). How to compute the sum of of the p matrix products at once? (result has shape (n,1)) (★★★)
 
 
 ```python
